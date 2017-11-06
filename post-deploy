@@ -9,9 +9,11 @@ if [[ -f "$DOKKU_ROOT/$APP/SLACK_URL" || -f "$DOKKU_ROOT/SLACK_URL" ]]; then
   echo "-----> Notifying Slack ..."
   URL=$(dokku url $APP)
   SLACK_URL=$(cat "$DOKKU_ROOT/$APP/SLACK_URL" 2> /dev/null || cat "$DOKKU_ROOT/SLACK_URL" 2> /dev/null)
+  GIT_COMMIT_HASH=$(cd "$DOKKU_ROOT/$APP"; git rev-parse --short HEAD)
+  GIT_MESSAGE=$(cd "$DOKKU_ROOT/$APP"; git log -1 --pretty="%B")
   SLACK_JSON="{ \
     \"attachments\": [{ \
-      \"text\": \"Deployed $APP to $HOSTNAME via $URL\", \
+      \"text\": \"Deployed *$APP* \`$GIT_COMMIT_HASH\` to *$HOSTNAME* via $URL\n$GIT_MESSAGE\", \
       \"fallback\": \"Deployed $APP to $HOSTNAME via $URL\", \
       \"color\": \"good\", \
       \"mrkdwn_in\": [\"text\"] \
