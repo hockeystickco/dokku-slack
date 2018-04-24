@@ -6,10 +6,10 @@ IMAGE="$2"
 HOSTNAME=$(hostname -f)
 
 if [[ -f "$DOKKU_ROOT/$APP/SLACK_URL" || -f "$DOKKU_ROOT/SLACK_URL" ]]; then
-  echo "-----> Notifying Slack ${SLACK_CHANNEL:=#engineering}..."
-  env
   URL=$(dokku url $APP)
   SLACK_URL=$(cat "$DOKKU_ROOT/$APP/SLACK_URL" 2> /dev/null || cat "$DOKKU_ROOT/SLACK_URL" 2> /dev/null)
+  SLACK_CHANNEL=$(cat "$DOKKU_ROOT/$APP/SLACK_CHANNEL" 2> /dev/null || cat "$DOKKU_ROOT/SLACK_CHANNEL" 2> /dev/null)
+  echo "-----> Notifying Slack ${SLACK_CHANNEL:=#engineering}..."
   GIT_COMMIT_HASH=$(cd "$DOKKU_ROOT/$APP"; git rev-parse --short HEAD 2> /dev/null || echo "init dokku setup")
   GIT_MESSAGE=$(cd "$DOKKU_ROOT/$APP"; git log -1 --pretty="%B" 2> /dev/null || echo " ")
   SLACK_JSON="{ \

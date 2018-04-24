@@ -11,8 +11,12 @@ is_webhook() {
   echo "$1" | grep -E '^http[s]?://'
 }
 
+is_channel() {
+  echo "$1" | grep -E '^[#|@]'
+}
+
 get_slack_root() {
-  if [[ -z $(is_webhook "$1") ]]; then
+  if [[ -z $(is_webhook "$1") && -z $(is_channel "$1") ]]; then
     verify_app_name "$1"
     APP="$1"
     echo "$DOKKU_ROOT/$APP"
@@ -21,7 +25,7 @@ get_slack_root() {
   fi
 }
 
-get_webhook() {
+get_input() {
   if [[ -n $1 && -n $2 ]]; then
     echo "$2"
   else
@@ -30,12 +34,20 @@ get_webhook() {
 }
 
 case "$1" in
-  slack:set)
+  slack:set-url)
     SLACK_ROOT=$(get_slack_root "$2")
-    WEBHOOK=$(get_webhook "$2" "$3")
+    WEBHOOK=$(get_input "$2" "$3")
     [[ -z $WEBHOOK ]] && echo "Please specify at least a webhook URL" && exit 1
     [[ -z $(is_webhook "$WEBHOOK") ]] && echo "Webhook has to be an URL" && exit 1
     echo "$WEBHOOK" > "$SLACK_ROOT/SLACK_URL"
+    ;;
+
+  slack:set-channel)
+    SLACK_ROOT=$(get_slack_root "$2")
+    CHANNEL=$(get_input "$2" "$3")
+    [[ -z $CHANNEL ]] && echo "Please specify at least a Slack channel" && exit 1
+    [[ -z $(is_channel "$CHANNEL") ]] && echo "Channel has to start with # or @" && exit 1
+    echo "$CHANNEL" > "$SLACK_ROOT/SLACK_CHANNEL"
     ;;
 
   slack:clear)
