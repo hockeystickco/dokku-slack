@@ -62,7 +62,8 @@ case "$1" in
 
   help)
     HELP=$(cat<<EOF
-    slack:set [app] <webhook_url>, Set Slack WebHook URL
+    slack:set-url [app] <webhook_url>, Set Slack WebHook URL
+    slack:set-channel [app] <channel>, Set Slack Channel
     slack:clear [app], Clears Slack WebHook URL
     slack:get [app], Display Slack WebHook URL
 EOF
