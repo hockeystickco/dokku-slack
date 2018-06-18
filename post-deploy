@@ -10,13 +10,10 @@ if [[ -f "$DOKKU_ROOT/$APP/SLACK_URL" || -f "$DOKKU_ROOT/SLACK_URL" ]]; then
   SLACK_URL=$(cat "$DOKKU_ROOT/$APP/SLACK_URL" 2> /dev/null || cat "$DOKKU_ROOT/SLACK_URL" 2> /dev/null)
   SLACK_CHANNEL=$(cat "$DOKKU_ROOT/$APP/SLACK_CHANNEL" 2> /dev/null || cat "$DOKKU_ROOT/SLACK_CHANNEL" 2> /dev/null || echo "#engineering")
   echo "-----> Notifying Slack ${SLACK_CHANNEL}..."
-  env
-  GIT_COMMIT_HASH=$(cd "$DOKKU_ROOT/$APP"; git rev-parse --short HEAD 2> /dev/null || echo "init dokku setup")
-  GIT_MESSAGE=$(cd "$DOKKU_ROOT/$APP"; git log -1 --pretty="%B" 2> /dev/null || echo " ")
   SLACK_JSON="{ \
     \"channel\": \"$SLACK_CHANNEL\", \
     \"attachments\": [{ \
-      \"text\": \"Deployed *$APP* \`$GIT_COMMIT_HASH\` to *$HOSTNAME* via $URL\n$GIT_MESSAGE\", \
+      \"text\": \"Deployed *$APP* \`$GIT_REV\` to *$HOSTNAME* via $URL\", \
       \"fallback\": \"Deployed $APP to $HOSTNAME via $URL\", \
       \"color\": \"good\", \
       \"mrkdwn_in\": [\"text\"] \
