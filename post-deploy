@@ -2,11 +2,11 @@
 set -eo pipefail; [[ $DOKKU_TRACE ]] && set -x
 
 APP="$1"
-IMAGE="$2"
 HOSTNAME=$(hostname -f)
 
 if [[ -f "$DOKKU_ROOT/$APP/SLACK_URL" || -f "$DOKKU_ROOT/SLACK_URL" ]]; then
-  URL=$(dokku url $APP)
+  URL=$(dokku url "$APP")
+  GIT_REV=$(dokku config:get "$APP" GIT_REV)
   SLACK_URL=$(cat "$DOKKU_ROOT/$APP/SLACK_URL" 2> /dev/null || cat "$DOKKU_ROOT/SLACK_URL" 2> /dev/null)
   SLACK_CHANNEL=$(cat "$DOKKU_ROOT/$APP/SLACK_CHANNEL" 2> /dev/null || cat "$DOKKU_ROOT/SLACK_CHANNEL" 2> /dev/null || echo "#engineering")
   echo "-----> Notifying Slack ${SLACK_CHANNEL}..."
